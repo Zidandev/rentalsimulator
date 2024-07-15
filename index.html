@@ -1,0 +1,327 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rental Simulator</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      text-align: center;
+      background-color: #f0f0f0;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      color: #333;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+  
+     buttop {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      background-color: #FFA500;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      margin-top: 20px;
+    }
+
+    buttop:hover {
+      background-color: #FF8C00;
+    }
+
+    #game-info {
+      margin-top: 20px;
+      font-size: 18px;
+    }
+
+    #rental-size-info {
+      margin-top: 10px;
+      font-size: 16px;
+    }
+
+    #rental-size-list {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    #rental-size-list li {
+      margin-bottom: 5px;
+    }
+
+    #rental-size-text {
+      margin-top: 10px;
+    }
+  
+          #shop {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 20px;
+    }
+
+    #shop-container {
+      margin-top: 10px;
+      font-size: 16px;
+    }
+            #bshop {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 20px;
+    }
+
+    #bshop-container {
+      margin-top: 10px;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Rental Simulator</h1>
+
+
+ <div id="game-info"></div>
+  </div>
+
+<h2>Patch Note 1.0</h2>
+<li>Merapihkan Tampilan List Harga</li>
+<li>Gameplay Membeli Upgrade Sampe Tamat</li>
+<li>Penambahan Beli Tv Level Untuk Penambahan Penghasilan </li>
+<li>Selamat Bermain</li>
+
+<button onclick="openBshop()">List Pembelian</button>     
+    
+        <div id="bshop">
+      <div id="bshop-container"></div>
+
+  <buttop onclick="buyRentalSize()">Beli Rental Size</buttop>
+ <buttop onclick="buyTv()">Beli TV</buttop></div>
+        
+<button onclick="openShop()">List Harga</button>     
+    
+        <div id="shop">
+      <div id="shop-container">
+<p><strong>List Harga Rental Size</strong></p>
+<li> Rental Size 2 = 50 </li>
+<li> Rental Size 3 = 200 </li>
+<li> Rental Size 4 = 300 </li>
+<li> Rental Size 5 = 1000 </li>
+<li> Rental Size 6 = 1200 </li>
+<li> Rental Size 7 = 3145 </li>
+<li> Rental Size 8 = 5000 </li>
+<li> Rental Size 9 = 7000 </li>
+<li> Rental Size 10 = 20000 </li>
+        
+      <p><strong>List Harga TV</strong></p>
+      <li>TV 2 = 60</li>
+      <li>TV 3 = 100</li>
+      <li>TV 4 = 200</li>
+      <li>TV 5 = 500</li>
+      <li>TV 6 = 1000</li>
+      <li>TV 7 = 2000</li>
+      <li>TV 8 = 5000</li>
+      <li>TV 9 = 10000</li>
+      <li>TV 10 = 15000</li>
+    </div>
+ 
+  <script>
+    let isRentalSizeVisible = false;
+    let zp = 0;
+    let rentalSize = 1;
+    let rentalCost = 50;
+    let tvLevel = 1;
+    let tvCost = 0;
+          
+    function updateDisplay(message) {
+      // Update the display with current game state and messages
+      const gameInfoElement = document.getElementById('game-info');
+      gameInfoElement.innerHTML = `<p>ZP: ${zp}</p><p>Rental Size: ${rentalSize}</p><p>Tv Level: ${tvLevel}</p><p>${message}</p>`;
+    }
+
+  function saveGame() {
+    // Save game state to local storage
+    localStorage.setItem('rentalGame', JSON.stringify({ zp, rentalSize, rentalCost, tvLevel }));
+  }
+
+  function loadGame() {
+    // Load game state from local storage
+    const savedGame = localStorage.getItem('rentalGame');
+    if (savedGame) {
+      const { zp: savedZP, rentalSize: savedRentalSize, rentalCost: savedRentalCost, tvLevel: savedTVLevel } = JSON.parse(savedGame);
+      zp = savedZP;
+      rentalSize = savedRentalSize;
+      rentalCost = savedRentalCost || 50;
+      tvLevel = savedTVLevel || 1;
+    }
+  }
+
+    function playGame() {
+      // Logic for playing the game
+      const customerDelay = Math.floor(Math.random() * (10 - 5 + 1) + 5) * 1000; // 5 to 10 seconds in milliseconds
+      updateDisplay(`Menunggu orang datang...`);
+
+      setTimeout(() => {
+        let playTime = Math.floor(Math.random() * (5 - 3 + 1) + 3);
+
+        // Initial earnings are random between 1 to 3 ZP, multiplied by rental size
+        const earnings = (Math.floor(Math.random() * (5 - 3 + 1) + 3) + tvLevel) * rentalSize;
+
+        updateDisplay(`Orang datang! Menunggu orang bermain selama ${playTime} detik. Penghasilan awal: ${earnings} ZP.`);
+
+        const playInterval = setInterval(() => {
+          playTime--;
+
+          if (playTime === 0) {
+            clearInterval(playInterval);
+            zp += earnings;
+
+            updateDisplay(`Orang bermain selama ${playTime} detik. Mendapatkan total ${earnings} ZP.`);
+
+            saveGame();
+            playGame(); // Start the next customer play after finishing the current one
+          } else {
+            updateDisplay(`Sedang bermain... Waktu bermain tersisa: ${playTime} detik.`);
+          }
+        }, 1000);
+      }, customerDelay);
+    }
+
+    function toggleRentalSize() {
+      isRentalSizeVisible = !isRentalSizeVisible;
+
+      const rentalSizeListElement = document.getElementById('rental-size-list');
+      const rentalSizeTextElement = document.getElementById('rental-size-text');
+      
+      if (isRentalSizeVisible) {
+        // Display rental size info
+        rentalSizeListElement.innerHTML = '';
+
+        const rentalPrices = {
+          2: 50,
+          3: 200,
+          4: 300,
+          5: 1000,
+          6: 1200,
+          7: 3145,
+          8: 5000,
+          9: 7000,
+          10: 20000
+        };
+
+        for (let size in rentalPrices) {
+          const listItem = document.createElement('li');
+          listItem.textContent = `Rental Size ${size}: ${rentalPrices[size]} ZP.`;
+          rentalSizeListElement.appendChild(listItem);
+        }
+
+        rentalSizeTextElement.textContent = "Pilih Rental Size untuk dibeli:";
+      } else {
+        // Keep rental size info visible
+        rentalSizeTextElement.textContent = "Pilih Rental Size untuk dibeli:";
+      }
+    }
+
+    function buyRentalSize() {
+      const rentalPrices = {
+        2: 50,
+        3: 200,
+        4: 300,
+        5: 1000,
+        6: 1200,
+        7: 3145,
+        8: 5000,
+        9: 7000,
+        10: 20000
+      };
+
+      const nextRentalSizeCost = rentalPrices[rentalSize + 1];
+
+      if (nextRentalSizeCost && zp >= nextRentalSizeCost) {
+        zp -= nextRentalSizeCost;
+        rentalSize++;
+        rentalCost = nextRentalSizeCost;
+
+        updateDisplay(`Beli Rental Size ${rentalSize} berhasil!`);
+        saveGame();
+      } else {
+        updateDisplay(`Tidak cukup ZP untuk membeli Rental Size selanjutnya.`);
+      }
+    }
+        
+          function buyTv() {
+  const tvPrices = {
+    2: 60,
+    3: 100,
+    4: 200,
+    5: 500,
+    6: 1000,
+    7: 2000,
+    8: 5000,
+    9: 10000,
+    10: 15000
+  };
+
+  const nextTvCost = tvPrices[tvLevel + 1];
+
+  if (nextTvCost && zp >= nextTvCost) {
+    zp -= nextTvCost;
+    tvLevel++;
+    tvCost = nextTvCost;
+
+    updateDisplay(`Beli TV Level ${tvLevel} berhasil!`);
+    saveGame();
+  } else {
+    updateDisplay(`Tidak cukup ZP untuk membeli TV Level selanjutnya.`);
+  }
+}
+          
+        function openShop() {
+  const shop = document.getElementById('shop');
+  
+  if (shop.style.display === 'block') {
+    shop.style.display = 'none';
+  } else {
+    shop.style.display = 'block';
+  }
+}
+        
+                function openBshop() {
+  const shop = document.getElementById('bshop');
+  
+  if (bshop.style.display === 'block') {
+    bshop.style.display = 'none';
+  } else {
+    bshop.style.display = 'block';
+  }
+}
+
+    // Load previous game state if available
+    loadGame();
+
+    // Display initial game state
+    updateDisplay("Tekan 'Mulai' untuk memulai permainan.");
+
+    // Start the game loop
+    playGame();
+  </script>
+
+</body>
+</html>
